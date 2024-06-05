@@ -1,11 +1,14 @@
-# Start from a Python base image
-FROM python:3.8-slim-buster
+# Start from the official PostgreSQL image
+FROM postgres:latest
 
 # Update the package lists
 RUN apt-get update
 
-# Install necessary packages for PostgreSQL and GDAL, and also Git and wget
-RUN apt-get install -y libpq-dev python3-dev libgdal-dev git wget
+# Install necessary packages for GDAL, and also Git and wget
+RUN apt-get install -y libgdal-dev git wget
+
+# Install Python and necessary packages for PostgreSQL
+RUN apt-get install -y python3 python3-pip libpq-dev python3-dev
 
 # Set the working directory in the container
 WORKDIR /app
@@ -14,8 +17,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install Python packages
-RUN pip install --no-cache-dir -r requirements.txt
-
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Command to run on container start
-CMD [ "/bin/bash" ]
+CMD ["postgres"]
