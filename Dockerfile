@@ -1,27 +1,11 @@
-# Start from the official PostgreSQL image
-FROM postgres:latest
+FROM python:3.11.8-slim
 
-# Update the package lists
-RUN apt-get update
-
-# Install necessary packages for GDAL, and also Git and wget
-RUN apt-get install -y libgdal-dev git wget
-
-# Install Python and necessary packages for PostgreSQL
-RUN apt-get install -y python3 python3-pip libpq-dev python3-dev python3-venv
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Create a virtual environment and activate it
-RUN python3 -m venv venv
-ENV PATH="/app/venv/bin:$PATH"
-
-# Copy the dependencies file to the working directory
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Python packages
-RUN pip3 install --no-cache-dir -r requirements.txt
+COPY ./app /app/app
 
-# Command to run on container start
-CMD ["postgres"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+EXPOSE 80
